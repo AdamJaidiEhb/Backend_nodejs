@@ -83,5 +83,25 @@ exports.searchAnime = (req, res) => {
       res.status(200).json(results);
     });
   };
+
+  exports.sortAnime = (req, res) => {
+    const { field, order } = req.query;
+    const validFields = ['score', 'release_date'];
+    const validOrder = ['ASC', 'DESC'];
+  
+    if (!validFields.includes(field)) {
+      return res.status(400).json({ message: `Ongeldige sorteeroptie: ${field}` });
+    }
+    if (!validOrder.includes(order)) {
+      return res.status(400).json({ message: `Ongeldige sorteervolgorde: ${order}` });
+    }
+  
+    const sql = `SELECT * FROM anime ORDER BY ${field} ${order}`;
+    db.query(sql, (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(200).json(results);
+    });
+  };
+  
   
   

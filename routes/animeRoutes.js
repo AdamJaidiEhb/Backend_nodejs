@@ -1,5 +1,13 @@
 const express = require('express');
-const { getAnime, getAnimeById, createAnime, updateAnime, deleteAnime } = require('../controllers/animeController');
+const {
+  getAnime,
+  getAnimeById,
+  createAnime,
+  updateAnime,
+  deleteAnime,
+  getAnimeWithPagination,
+  searchAnime,
+} = require('../controllers/animeController');
 
 const router = express.Router();
 
@@ -8,17 +16,7 @@ router.get('/:id', getAnimeById);
 router.post('/', createAnime);
 router.put('/:id', updateAnime);
 router.delete('/:id', deleteAnime);
-
-module.exports = router;
-
-const { getAnimeWithPagination } = require('../controllers/animeController');
-
 router.get('/paginated', getAnimeWithPagination);
-
-const { searchAnime } = require('../controllers/animeController');
-
 router.get('/search', searchAnime);
 
-const { sortAnime } = require('../controllers/animeController');
-router.get('/sort', sortAnime);
-
+module.exports = router;
