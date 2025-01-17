@@ -8,9 +8,19 @@ const PORT = 3000;
 
 app.use(bodyParser.json());
 
+// Routes voor anime en characters
 app.use('/api/anime', animeRoutes);
 app.use('/api/characters', characterRoutes);
 
+// Route voor rootpagina
+app.get('/', (req, res) => {
+    res.send(`
+      <h1>Welkom bij de Anime/Manga API</h1>
+      <p>Ga naar <a href="/docs">/docs</a> voor documentatie van de API.</p>
+    `);
+});
+
+// Documentatiepagina
 app.get('/docs', (req, res) => {
     res.send(`
       <h1>Anime/Manga API Documentatie</h1>
@@ -29,15 +39,15 @@ app.get('/docs', (req, res) => {
         <li><strong>DELETE /api/characters/:id</strong>: Verwijder een character</li>
       </ul>
     `);
-  });
-  
+});
 
+// Start de server
 app.listen(PORT, () => {
   console.log(`Server draait op http://localhost:${PORT}`);
 });
 
+// Test de databaseverbinding
 const db = require('./models/db');
-
 db.query('SELECT 1 + 1 AS result', (err, results) => {
     if (err) {
         console.error('Databaseverbinding mislukt:', err.message);
