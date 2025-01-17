@@ -54,3 +54,14 @@ exports.createAnime = (req, res) => {
       res.status(200).json({ message: 'Anime verwijderd' });
     });
   };
+
+exports.getAnimeWithPagination = (req, res) => {
+    const { limit, offset } = req.query;
+  
+    const sql = 'SELECT * FROM anime LIMIT ? OFFSET ?';
+    db.query(sql, [parseInt(limit), parseInt(offset)], (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(200).json(results);
+    });
+  };
+  

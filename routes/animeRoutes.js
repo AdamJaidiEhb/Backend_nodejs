@@ -10,3 +10,7 @@ router.put('/:id', updateAnime);
 router.delete('/:id', deleteAnime);
 
 module.exports = router;
+
+const { getAnimeWithPagination } = require('../controllers/animeController');
+
+router.get('/paginated', getAnimeWithPagination);
