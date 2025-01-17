@@ -17,6 +17,8 @@ router.get('/paginated', getAnimeWithPagination);
 
 const { searchAnime } = require('../controllers/animeController');
 
-// Voeg de zoekroute toe
 router.get('/search', searchAnime);
+
+const { sortAnime } = require('../controllers/animeController');
+router.get('/sort', sortAnime);
 

@@ -18,7 +18,16 @@ exports.getCharacterById = (req, res) => {
 
 exports.createCharacter = (req, res) => {
   const { name, role, anime_id } = req.body;
-  if (!name || !role) return res.status(400).json({ message: 'Naam en rol zijn verplicht' });
+  if (!name || typeof name !== 'string' || name.trim() === '') {
+    return res.status(400).json({ message: 'Naam is verplicht en moet tekst zijn' });
+  }
+  if (!role || (role !== 'Main' && role !== 'Supporting')) {
+    return res.status(400).json({ message: 'Rol moet "Main" of "Supporting" zijn' });
+  }
+  if (anime_id && isNaN(anime_id)) {
+    return res.status(400).json({ message: 'anime_id moet een geldig getal zijn' });
+  }
+  
 
   db.query(
     'INSERT INTO characters (name, role, anime_id) VALUES (?, ?, ?)',

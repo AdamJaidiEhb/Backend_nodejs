@@ -18,9 +18,16 @@ exports.getAnimeById = (req, res) => {
 
 exports.createAnime = (req, res) => {
     const { name, genre, release_date, score } = req.body;
-    if (!name || !genre) return res.status(400).json({ message: 'Naam en genre zijn verplicht' });
-    if (!name || typeof name !== 'string') return res.status(400).json({ message: 'Ongeldige naam' });
-    if (score && isNaN(score)) return res.status(400).json({ message: 'Score moet een getal zijn' });
+    if (!name || typeof name !== 'string' || name.trim() === '') {
+        return res.status(400).json({ message: 'Naam is verplicht en moet tekst zijn' });
+      }
+      if (!genre || typeof genre !== 'string' || genre.trim() === '') {
+        return res.status(400).json({ message: 'Genre is verplicht en moet tekst zijn' });
+      }
+      if (score && (isNaN(score) || score < 0 || score > 10)) {
+        return res.status(400).json({ message: 'Score moet een getal zijn tussen 0 en 10' });
+      }
+      
 
     db.query(
       'INSERT INTO anime (name, genre, release_date, score) VALUES (?, ?, ?, ?)',
