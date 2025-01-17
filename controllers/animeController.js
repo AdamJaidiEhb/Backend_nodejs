@@ -27,6 +27,9 @@ exports.createAnime = (req, res) => {
       if (score && (isNaN(score) || score < 0 || score > 10)) {
         return res.status(400).json({ message: 'Score moet een getal zijn tussen 0 en 10' });
       }
+      if (!release_date || isNaN(Date.parse(release_date))) {
+        return res.status(400).json({ message: 'Ongeldige releasedatum' });
+      }
       
 
     db.query(
@@ -42,6 +45,13 @@ exports.createAnime = (req, res) => {
   exports.updateAnime = (req, res) => {
     const { id } = req.params;
     const { name, genre, release_date, score } = req.body;
+  
+    if (release_date && isNaN(Date.parse(release_date))) {
+      return res.status(400).json({ message: 'Ongeldige releasedatum' });
+    }
+    if (score && (score < 0 || score > 10)) {
+      return res.status(400).json({ message: 'Score moet tussen 0 en 10 liggen' });
+    }
   
     db.query(
       'UPDATE anime SET name = ?, genre = ?, release_date = ?, score = ? WHERE id = ?',
@@ -84,16 +94,33 @@ exports.searchAnime = (req, res) => {
     });
   };
 
+  exports.advancedSearchAnime = (req, res) => {
+    const { name, genre } = req.query;
+    let sql = 'SELECT * FROM anime WHERE 1=1';
+    const params = [];
+  
+    if (name) {
+      sql += ' AND name LIKE ?';
+      params.push(`%${name}%`);
+    }
+    if (genre) {
+      sql += ' AND genre LIKE ?';
+      params.push(`%${genre}%`);
+    }
+  
+    db.query(sql, params, (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(200).json(results);
+    });
+  };
+  
   exports.sortAnime = (req, res) => {
     const { field, order } = req.query;
     const validFields = ['score', 'release_date'];
     const validOrder = ['ASC', 'DESC'];
   
-    if (!validFields.includes(field)) {
-      return res.status(400).json({ message: `Ongeldige sorteeroptie: ${field}` });
-    }
-    if (!validOrder.includes(order)) {
-      return res.status(400).json({ message: `Ongeldige sorteervolgorde: ${order}` });
+    if (!validFields.includes(field) || !validOrder.includes(order)) {
+      return res.status(400).json({ message: 'Ongeldige sorteeropties' });
     }
   
     const sql = `SELECT * FROM anime ORDER BY ${field} ${order}`;
@@ -102,6 +129,7 @@ exports.searchAnime = (req, res) => {
       res.status(200).json(results);
     });
   };
+  
   
   
   
