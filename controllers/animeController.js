@@ -19,7 +19,9 @@ exports.getAnimeById = (req, res) => {
 exports.createAnime = (req, res) => {
     const { name, genre, release_date, score } = req.body;
     if (!name || !genre) return res.status(400).json({ message: 'Naam en genre zijn verplicht' });
-  
+    if (!name || typeof name !== 'string') return res.status(400).json({ message: 'Ongeldige naam' });
+    if (score && isNaN(score)) return res.status(400).json({ message: 'Score moet een getal zijn' });
+
     db.query(
       'INSERT INTO anime (name, genre, release_date, score) VALUES (?, ?, ?, ?)',
       [name, genre, release_date, score],
@@ -64,4 +66,15 @@ exports.getAnimeWithPagination = (req, res) => {
       res.status(200).json(results);
     });
   };
+
+exports.searchAnime = (req, res) => {
+    const { field, value } = req.query;
+  
+    const sql = `SELECT * FROM anime WHERE ${field} LIKE ?`;
+    db.query(sql, [`%${value}%`], (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(200).json(results);
+    });
+  };
+  
   
